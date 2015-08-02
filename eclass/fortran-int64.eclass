@@ -10,9 +10,8 @@
 # @BLURB: flags and utility functions for building Fortran multilib int64
 # multibuild packages
 # @DESCRIPTION:
-# The fortran-int64.eclass exports USE flags and utility functions
-# necessary to build packages for multilib int64 multibuild in a clean
-# and uniform manner.
+# The fortran-int64.eclass exports utility functions necessary to build 
+# packages for multilib int64 multibuild in a clean and uniform manner.
 
 if [[ ! ${_FORTRAN_INT64_ECLASS} ]]; then
 
@@ -22,7 +21,9 @@ case ${EAPI:-0} in
 	*) die "EAPI=${EAPI} is not supported" ;;
 esac
 
-inherit multilib-build toolchain-funcs
+FORTRAN_INT64="IUSE"
+
+inherit fortran-2 multilib-build toolchain-funcs
 
 # @ECLASS-VARIABLE: EBASE_PROFNAME
 # @DESCRIPTION: The base pkg-config module name of the package being built.
@@ -222,7 +223,7 @@ fortran-int64_get_fortran_int64_abi_fflags() {
 	debug-print-function ${FUNCNAME} "${@}"
 	local openblas_abi_fflags=""
 	if $(fortran-int64_is_int64_build); then
-		openblas_abi_fflags+="-fdefault-integer-8"
+		openblas_abi_fflags+="$(fortran_get_int64_flag)"
 	fi
 	echo "${openblas_abi_fflags}"
 }
