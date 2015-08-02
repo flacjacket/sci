@@ -27,6 +27,8 @@
 #
 # FORTRAN_NEED_OPENMP=1
 
+if [[ ! ${_FORTRAN_2_ECLASS} ]]; then
+
 # @ECLASS-VARIABLE: FORTRAN_NEED_OPENMP
 # @DESCRIPTION:
 # Set to "1" in order to automatically have the eclass abort if the fortran
@@ -40,6 +42,21 @@
 #
 # Valid settings are any combination of: 77 90 95 2003
 : ${FORTRAN_STANDARD:=77}
+
+# @ECLASS-VARIABLE: FORTRAN_INT64
+# @DESCRIPTION:
+# Should fortran be compiled with 64bit integers length?
+#
+# Possible values are
+#
+# IUSE: add int64 IUSE to handle support USE dependend
+#
+# ALWAYS: unconditially add support
+#
+# FALSE: no support
+: ${FORTRAN_INT64:=FALSE}
+
+FORTRAN_INT64=IUSE && IUSE+=" int64"
 
 # @ECLASS-VARIABLE: FORTRAN_NEEDED
 # @DESCRIPTION:
@@ -71,6 +88,27 @@ for _f_use in ${FORTRAN_NEEDED}; do
 	esac
 done
 RDEPEND="${DEPEND}"
+
+# @FUNCTION: fortran_get_int64_flag
+# @DESCRIPTION:
+# Return language flag to compile int to be 8 bytes long. Currently only
+# gfortran and ifc are supported.
+# If you need other support, please file a bug.
+fortran_get_int64_flag() {
+	debug-print-function ${FUNCNAME} "${@}"
+	local fc=$(tc-getFC)
+	if [[ ${fc} =~ gfortran ]]; then
+		echo "-fdefault-integer-8"
+	elif [[ ${fc} =~ ifc ]]; then
+		echo "-i8"
+	else
+		eerror "Your fortran compile \"${fc}\" isn't currently supported"
+		eerror "please file a bug at"
+		eerorr "https://bugs.gentoo.org"
+		eerror "and request support"
+		die "${fc} isn't support for int64"
+	fi
+}
 
 # @FUNCTION: _fortran_write_testsuite
 # @INTERNAL
@@ -207,6 +245,7 @@ _fortran_test_function() {
 # @DESCRIPTION:
 # _The_ fortran-2_pkg_setup() code
 _fortran-2_pkg_setup() {
+	local _f_use
 	for _f_use in ${FORTRAN_NEEDED}; do
    	case ${_f_use} in
       	always)
@@ -226,6 +265,15 @@ _fortran-2_pkg_setup() {
    	      ;;
 	   esac
 	done
+	case ${FORTRAN_INT64} in
+		IUSE)
+			;;
+		ALWAYS)
+			append-fflags=$(fortran_get_int64_flag)
+			;;
+		FALSE)
+			;;
+	esac
 }
 
 
@@ -254,3 +302,5 @@ case ${EAPI:-0} in
 	*) die "EAPI=${EAPI} is not supported" ;;
 esac
 
+_FORTRAN_2_CLASS=1
+fi
