@@ -17,7 +17,7 @@ if [[ ! ${_NUMERIC_INT64_ECLASS} ]]; then
 
 # EAPI=4 is required for meaningful MULTILIB_USEDEP.
 case ${EAPI:-0} in
-	4|5) ;;
+	4|5) EXPORTED_FUNCTIONS="src_configure";;
 	*) die "EAPI=${EAPI} is not supported" ;;
 esac
 
@@ -102,6 +102,11 @@ numeric-int64_ensure_blas() {
 		$(tc-getPKG_CONFIG) --exists "${alternative_provider}" \
 			|| die "${PN} requires the pkgbuild module ${alternative_provider}"
 	done
+}
+
+numeric-int64_src_configure() {
+	local MULTIBUILD_VARIANTS=( $(fortran-int64-multibuild_multilib_get_enabled_abis) )
+	multibuild_foreach_variant fortran-int64_multilib_multibuild_wrapper numeric-multibuild_configure
 }
 
 _NUMERIC_INT64_ECLASS=1

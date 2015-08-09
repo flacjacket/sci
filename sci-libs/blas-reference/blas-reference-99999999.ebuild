@@ -4,9 +4,9 @@
 
 EAPI=5
 
-EBASE_PROFNAME="refblas"
-ESTATIC_MULTIBUILD="true"
-inherit fortran-2 cmake-utils alternatives-2 multibuild multilib-build toolchain-funcs fortran-int64
+FORTRAN_INT64=IUSE
+
+inherit alternatives-2 cmake-utils numeric-int64 toolchain-funcs
 
 LPN=lapack
 LPV=3.5.0
@@ -25,7 +25,7 @@ HOMEPAGE="http://www.netlib.org/lapack/"
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="int64 static-libs test"
+IUSE="static-libs test"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
@@ -33,6 +33,9 @@ DEPEND="${RDEPEND}
 PDEPEND=">=virtual/blas-2.1-r3[int64?]"
 
 S="${WORKDIR}/${LPN}-${LPV}"
+
+EBASE_PROFNAME="refblas"
+ESTATIC_MULTIBUILD="true"
 
 src_prepare() {
 	# rename library to avoid collision with other blas implementations
@@ -55,34 +58,30 @@ src_prepare() {
 		BLAS/CMakeLists.txt || die
 }
 
-src_configure() {
-	local MULTIBUILD_VARIANTS=( $(fortran-int64_multilib_get_enabled_abis) )
-	blas_configure() {
-		local profname=$(fortran-int64_get_profname)
-		local libname="${profname//-/_}"
-		local mycmakeargs=(
-			-Wno-dev
-			-DPROFNAME="${profname}"
-			-DLIBNAME="${libname}"
-			-DUSE_OPTIMIZED_BLAS=OFF
-			$(cmake-utils_use_build test TESTING)
-			-DCMAKE_Fortran_FLAGS="$($(tc-getPKG_CONFIG) --cflags ${blas_profname}) $(get_abi_CFLAGS) $(fortran-int64_get_fortran_int64_abi_fflags) ${FCFLAGS}"
-			-DLAPACK_PKGCONFIG_FFLAGS="$(fortran-int64_get_fortran_int64_abi_fflags)"
+numeric-multibuild_configure() {
+	local profname=$(fortran-int64_get_profname)
+	local libname="${profname//-/_}"
+	local mycmakeargs=(
+		-Wno-dev
+		-DPROFNAME="${profname}"
+		-DLIBNAME="${libname}"
+		-DUSE_OPTIMIZED_BLAS=OFF
+		$(cmake-utils_use_build test TESTING)
+		-DCMAKE_Fortran_FLAGS="$($(tc-getPKG_CONFIG) --cflags ${blas_profname}) $(get_abi_CFLAGS) $(fortran-int64_get_fortran_int64_abi_fflags) ${FCFLAGS}"
+		-DLAPACK_PKGCONFIG_FFLAGS="$(fortran-int64_get_fortran_int64_abi_fflags)"
+	)
+	if $(fortran-int64_is_static_build); then
+		mycmakeargs+=(
+			-DBUILD_SHARED_LIBS=OFF
+			-DBUILD_STATIC_LIBS=ON
 		)
-		if $(fortran-int64_is_static_build); then
-			mycmakeargs+=(
-				-DBUILD_SHARED_LIBS=OFF
-				-DBUILD_STATIC_LIBS=ON
-			)
-		else
-			mycmakeargs+=(
-				-DBUILD_SHARED_LIBS=ON
-				-DBUILD_STATIC_LIBS=OFF
-			)
-		fi
-		cmake-utils_src_configure
-	}
-	multibuild_foreach_variant fortran-int64_multilib_multibuild_wrapper blas_configure
+	else
+		mycmakeargs+=(
+			-DBUILD_SHARED_LIBS=ON
+			-DBUILD_STATIC_LIBS=OFF
+		)
+	fi
+	cmake-utils_src_configure
 }
 
 src_compile() {
