@@ -41,6 +41,7 @@ DEPEND="${RDEPEND}
 		>=dev-python/nose-0.10.1[${PYTHON_USEDEP}]
 		dev-python/requests[${PYTHON_USEDEP}]
 		dev-python/coverage[${PYTHON_USEDEP}]
+		www-client/casperjs
 	)
 	doc? (
 		>=dev-python/sphinx-1.1[${PYTHON_USEDEP}]
@@ -70,6 +71,11 @@ python_compile_all() {
 
 python_test() {
 	nosetests --with-coverage --cover-package=notebook notebook || die
+
+    "${PYTHON}" -m notebook.jstest base || die
+    "${PYTHON}" -m notebook.jstest notebook || die
+    "${PYTHON}" -m notebook.jstest services || die
+    "${PYTHON}" -m notebook.jstest tree || die
 }
 
 python_install() {
