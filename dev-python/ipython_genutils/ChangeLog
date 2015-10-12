@@ -2,6 +2,10 @@
 # Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # $Id$
 
+  12 Oct 2015; Sean Vig <sean.v.775@gmail.com> ipython_genutils-0.1.0.ebuild,
+  ipython_genutils-9999.ebuild:
+  dev-python/ipython_genutils: Add python3_5 target
+
   21 Sep 2015; Marius Brehler <marbre@linux.sungazer.de>
   ipython_genutils-9999.ebuild:
   dev-python/ipython_genutils: Add ~x86 to KEYWORDS
