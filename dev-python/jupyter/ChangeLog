@@ -2,6 +2,9 @@
 # Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # $Id$
 
+ 12 Oct 2015; Sean Vig <sean.v.775@gmail.com> jupyter-1.0.0.ebuild:
+ dev-python/jupyter: Add python3_5 target
+
 *jupyter-1.0.0 (02 Sep 2015)
 
   02 Sep 2015; Sean Vig <sean.v.775@gmail.com> +jupyter-1.0.0.ebuild,
