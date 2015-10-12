@@ -2,6 +2,10 @@
 # Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # $Id$
 
+  12 Oct 2015; Sean Vig <sean.v.775@gmail.com> jupyter_console-4.0.3.ebuild,
+  jupyter_console-9999.ebuild:
+  dev-python/jupyter_console: Add python3_5 target
+
 *jupyter_console-4.0.3 (11 Oct 2015)
 
   11 Oct 2015; Sean Vig <sean.v.775@gmail.com> +jupyter_console-4.0.3.ebuild,
