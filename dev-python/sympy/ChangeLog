@@ -1,0 +1,9 @@
+# ChangeLog for dev-python/sympy
+# Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
+# $Id$
+
+*sympy-0.7.6.1 (23 Nov 2015)
+
+  23 Nov 2015; Sean Vig <sean.v.775@gmail.com> +sympy-0.7.6.1.ebuild,
+  +metadata.xml:
+  dev-python/sympy: Add version 0.7.6.1 with IPython 4 support
